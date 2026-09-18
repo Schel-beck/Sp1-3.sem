@@ -139,26 +139,6 @@ Relationerne gør det muligt at lave opslag som:
 
 ---
 
-## CRUD
-
-Programmet understøtter CRUD-operationer på film:
-
-| Operation | Funktion           |
-| --------- | ------------------ |
-| Create    | Tilføje en ny film |
-| Read      | Hente og vise film |
-| Update    | Opdatere en film   |
-| Delete    | Slette en film     |
-
-Ved opdatering af en film er det som minimum muligt at ændre:
-
-* Titel
-* Udgivelsesdato
-
-Det er også muligt at slette film fra databasen, eksempelvis hvis de ikke længere skal være en del af datasættet.
-
----
-
 ## Teknologier
 
 Projektet benytter blandt andet:
