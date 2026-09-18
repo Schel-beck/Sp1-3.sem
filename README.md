@@ -1,25 +1,193 @@
-**Sp-1 3.sem**
+# SP-1 – 3. semester
 
-Et program som henter og håndterer danske film fra de sidste 5 år. Programmet henter skuespiller, director, genre og information om hver film.
-Programmet har disse funktionaliteter
+## Beskrivelse
 
-The database should contain all Danish movies (orginates from Denmark) from the TMDb API that has been released in the last 5 years. So just recent Danish movies. It should be around 1661 movies in total (give and take a few hundred).
+Dette projekt er et program, der henter og håndterer information om danske film fra [The Movie Database (TMDb)](https://www.themoviedb.org/).
 
-We would like to be able to see a list of all movies pulled from the database.
+Programmet henter danske film, der er udgivet inden for de seneste 5 år, og gemmer informationerne i en PostgreSQL-database.
 
-Each movie has a list of actors and a director. We would like to be able to see a list of all actors and directors as well that have been part of those movies. You need to figure out how to fetch and store the actors and directors in the database. Also, what kind of relationship should there be between the entities?
+For hver film gemmes blandt andet:
 
-Each movie has a list of genres. We would like to be able to see a list of all genres as well. Also be able to list all movies within a particular genre. You need to figure out how to fetch and store the genres in the database. Also, what kind of relationship should there be between the entities?
+* Titel
+* Udgivelsesdato
+* Rating
+* Popularitet
+* Skuespillere
+* Instruktør
+* Genrer
 
-In case you want to add a new movie to the database, you should be able to do that as well. You should also be able to update and delete movies from the database. Not necessarily all fields, but at least the title and the release date.
+Formålet med projektet er at arbejde med REST API'er, databaser, relationer mellem entiteter samt CRUD- og søgefunktionalitet.
 
-We would like to be able to search for a movie by title. The search should be case insensitive and should return all movies that contain the search string in the title.
+---
 
-We would like to be able to get the total average rating of all movies in the database, the top-10 lowest and highest rated movies, and the top-10 most popular movies.
+## Funktionalitet
 
-We would like to be able to see a list of all movies that a particular actor has been part of.
+Programmet understøtter følgende funktioner:
 
-We would like to be able to see a list of all movies that a particular director has directed.
+### Film
 
-Måden dataen kommer over i databasen er via et stort while loop i main, som fortsætter indtil alle pages er loopet igennem.
-Der bliver brugt DAO metoder til at få sende entiteters data ind i postgres. Disse DAO metoder er testet.
+* Hente danske film fra TMDb API'et.
+* Gemme filmene i PostgreSQL-databasen.
+* Se en liste over alle film i databasen.
+* Tilføje nye film.
+* Opdatere film.
+* Slette film.
+* Søge efter film ud fra titel.
+
+  * Søgningen er case-insensitive.
+  * Søgningen finder alle film, hvor titlen indeholder den angivne søgestreng.
+
+### Skuespillere og instruktører
+
+Hver film har en liste af skuespillere og en instruktør.
+
+Programmet kan derfor:
+
+* Se en liste over alle skuespillere.
+* Se en liste over alle instruktører.
+* Se alle film, som en bestemt skuespiller har medvirket i.
+* Se alle film, som en bestemt instruktør har instrueret.
+
+Skuespillere og instruktører bliver hentet fra TMDb og gemt i databasen sammen med deres relationer til filmene.
+
+### Genrer
+
+Hver film kan have flere genrer.
+
+Programmet kan derfor:
+
+* Se en liste over alle genrer.
+* Se alle film inden for en bestemt genre.
+
+Genrer bliver hentet fra TMDb og gemt i databasen med en relation til de film, de tilhører.
+
+### Statistik
+
+Programmet kan beregne og vise:
+
+* Den gennemsnitlige rating for alle film i databasen.
+* De 10 højest ratede film.
+* De 10 lavest ratede film.
+* De 10 mest populære film.
+
+---
+
+## Data fra TMDb
+
+Programmet bruger TMDb API'et som ekstern datakilde.
+
+Der hentes kun film, som:
+
+* Har Danmark (`DK`) som oprindelsesland.
+* Er udgivet inden for de seneste 5 år.
+* Ikke er markeret som voksenindhold.
+
+Datoen for de seneste 5 år beregnes dynamisk med `LocalDate`, så programmet altid arbejder med et rullende 5-års interval.
+
+Datamængden forventes at være omkring 1.661 film, men det præcise antal kan variere afhængigt af dataene i TMDb.
+
+---
+
+## Import af data
+
+Dataene bliver hentet fra TMDb API'et gennem et stort `while`-loop i programmets `main`-metode.
+
+Programmet fortsætter med at hente sider fra API'et, indtil alle relevante pages er gennemgået.
+
+For hver film bliver relevante oplysninger hentet og gemt i databasen. Dette inkluderer også filmens:
+
+* Skuespillere
+* Instruktør
+* Genrer
+
+Dataene bliver sendt til PostgreSQL gennem DAO-metoder.
+
+DAO-metoderne er testet for at sikre, at data bliver korrekt gemt og hentet fra databasen.
+
+---
+
+## Database og relationer
+
+Projektet bruger PostgreSQL som database.
+
+Filmens relationer til de øvrige entiteter håndteres i databasen, så den samme skuespiller, instruktør eller genre kan genbruges på tværs af flere film.
+
+De centrale entiteter er:
+
+```text
+Movie
+Actor
+Director
+Genre
+```
+
+En film kan have flere skuespillere og flere genrer, mens en skuespiller kan medvirke i flere film.
+
+Dette giver blandt andet følgende relationer:
+
+```text
+Movie  <--->  Actor
+Movie  <--->  Genre
+Movie  --->   Director
+```
+
+Relationerne gør det muligt at lave opslag som:
+
+* Alle film med en bestemt skuespiller.
+* Alle film instrueret af en bestemt instruktør.
+* Alle film inden for en bestemt genre.
+
+---
+
+## CRUD
+
+Programmet understøtter CRUD-operationer på film:
+
+| Operation | Funktion           |
+| --------- | ------------------ |
+| Create    | Tilføje en ny film |
+| Read      | Hente og vise film |
+| Update    | Opdatere en film   |
+| Delete    | Slette en film     |
+
+Ved opdatering af en film er det som minimum muligt at ændre:
+
+* Titel
+* Udgivelsesdato
+
+Det er også muligt at slette film fra databasen, eksempelvis hvis de ikke længere skal være en del af datasættet.
+
+---
+
+## Teknologier
+
+Projektet benytter blandt andet:
+
+* **Java**
+* **PostgreSQL**
+* **TMDb API**
+* **REST API**
+* **DAO (Data Access Object)**
+* **LocalDate**
+* **JUnit** til test af DAO-metoder
+
+---
+
+## Projektets formål
+
+Projektet kombinerer arbejdet med en ekstern REST API og en relationel database.
+
+Vi arbejder blandt andet med:
+
+* API-integration
+* JSON-data
+* Databasehåndtering
+* DAO-pattern
+* Relationer mellem entiteter
+* CRUD-operationer
+* Søgefunktionalitet
+* Statistik og SQL-queries
+* Unit tests
+
+Projektet giver dermed mulighed for at arbejde med hele flowet fra ekstern API til database og videre til behandling og præsentation af data.
+
