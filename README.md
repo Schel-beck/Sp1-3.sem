@@ -2,6 +2,7 @@
 
 Et program som henter og håndterer danske film fra de sidste 5 år. Programmet henter skuespiller, director, genre og information om hver film.
 Programmet har disse funktionaliteter
+
 The database should contain all Danish movies (orginates from Denmark) from the TMDb API that has been released in the last 5 years. So just recent Danish movies. It should be around 1661 movies in total (give and take a few hundred).
 We would like to be able to see a list of all movies pulled from the database.
 Each movie has a list of actors and a director. We would like to be able to see a list of all actors and directors as well that have been part of those movies. You need to figure out how to fetch and store the actors and directors in the database. Also, what kind of relationship should there be between the entities?
